@@ -1,4 +1,4 @@
-package com.mcgoldrick.bakingapp;
+package com.mcgoldrick.bakingapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+
+import com.mcgoldrick.bakingapp.R;
 
 /**
  * An activity representing a single Recipe detail screen. This
