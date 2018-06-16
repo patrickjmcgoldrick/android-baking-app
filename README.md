@@ -1,6 +1,6 @@
 # android-baking-app
 
-Given, example JSON -> https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json
+Given, [example JSON](https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json)
 
 Build an app from scratch that shows baking recipes.  Including ingrediants, steps, videos and images.
 
@@ -22,7 +22,7 @@ App Navigation | App should allow navigation between individual recipes and reci
 Utilization of RecyclerView | App uses RecyclerView and can handle recipe steps that include videos or images.
 App conforms to common standards found in the Android Nanodegree General Project Guidelines. | App conforms to common standards found in the Android Nanodegree General Project Guidelines.  
 
-###Components and Libraries
+### Components and Libraries
 
 CRITERIA | MEETS SPECIFICATIONS
 --- | ---
