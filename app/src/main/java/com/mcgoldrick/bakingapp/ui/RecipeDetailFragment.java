@@ -53,6 +53,7 @@ public class RecipeDetailFragment extends Fragment {
      */
     DetailAdapter mAdapter;
 
+    String mIngredientsList = "No ingredients found.";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -108,12 +109,37 @@ public class RecipeDetailFragment extends Fragment {
         }
 
         Cursor cursor = new DetailCursor(ingredients, steps);
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recipe_detail);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.steps);
         assert recyclerView != null;
         mAdapter = new DetailAdapter(this, mTwoPane, cursor);
         recyclerView.setAdapter(mAdapter);
 
+        TextView ingredientsView = (TextView) rootView.findViewById(R.id.ingredients);
+        buildIngredientsList(ingredients);
+        ingredientsView.setText(mIngredientsList);
+
         return rootView;
+    }
+
+    private void buildIngredientsList(JSONArray ingredients) {
+        mIngredientsList = "Ingredients:\n\n";
+        for(int i=0; i < ingredients.length(); i++) {
+            JSONObject object = null;
+            try {
+                object = ingredients.getJSONObject(i);
+                if (i > 0) {
+                    mIngredientsList += "\n";
+                }
+                mIngredientsList += "\t" + object.getString("quantity")
+                        + " " + object.getString("measure")
+                        + " " + object.getString("ingredient");
+            } catch (JSONException jsone) {
+                Log.e(TAG, "JSON error while building ingredients list.");
+                Log.e(TAG, "List built up to: " + mIngredientsList);
+
+            }
+
+        }
     }
 
     private class DetailAdapter extends RecyclerView.Adapter<ViewHolder> {

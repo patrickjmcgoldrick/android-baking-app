@@ -30,47 +30,20 @@ public class DetailCursor implements Cursor {
     String mIngredientsList = "No ingredients found.";
 
     public DetailCursor(JSONArray ingredients, JSONArray steps) {
-	    mIngredients = ingredients;
+        mIngredients = ingredients;
         mSteps = steps;
         mPosition = 0;
-        buildIngredientsList();
     }
-
-    private void buildIngredientsList() {
-        mIngredientsList = "Ingredients:\n\n";
-        for(int i=0; i < mIngredients.length(); i++) {
-            JSONObject object = null;
-            try {
-                object = mIngredients.getJSONObject(i);
-                if (i > 0) {
-                    mIngredientsList += "\n";
-                }
-                mIngredientsList += "\t" + object.getString("quantity")
-                        + " " + object.getString("measure")
-                        + " " + object.getString("ingredient");
-            } catch (JSONException jsone) {
-                Log.e(TAG, "JSON error while building ingredients list.");
-                Log.e(TAG, "List built up to: " + mIngredientsList);
-
-            }
-
-        } 
-    } 
 
     @Override
     public int getCount() {
-        // list of ingredients will be all in one view.
-        // event if we have no ingredients, we will use
-        // a view to inform the user.
-        int count = 1;
-
         // a separate view for each step
         // These steps need to be clickable,
         // if there is a video associated.
         if(mSteps != null) {
-            count += mSteps.length();
+            return mSteps.length();
         }
-        return count;
+        return 0;
     }
 
     @Override
@@ -200,20 +173,17 @@ public class DetailCursor implements Cursor {
     @Override
     public String getString(int columnIndex) {
         String value = "";
-        if(mPosition == 0) { // first position, return ingredients list
-            return mIngredientsList;
-        } else {
-            // lookup short description in Steps JSONArray
-            String shortDesc = null;
-            try {
-                JSONObject stepRow = mSteps.getJSONObject(mPosition-1);
+       // lookup short description in Steps JSONArray
+        String shortDesc = null;
+        try {
+            JSONObject stepRow = mSteps.getJSONObject(mPosition);
 
-                shortDesc = stepRow.getString(RecipeContract.Steps.SHORT_DESC);
-            } catch (JSONException jsone) {
-                Log.e(TAG, "Error reading row: " + mPosition + ", index: " + columnIndex);
-            }
-            return shortDesc;
+            shortDesc = stepRow.getString(RecipeContract.Steps.SHORT_DESC);
+        } catch (JSONException jsone) {
+            Log.e(TAG, "Error reading row: " + mPosition + ", index: " + columnIndex);
         }
+        return shortDesc;
+
     }
 
     @Override
