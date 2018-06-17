@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mcgoldrick.bakingapp">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -30,12 +33,14 @@
         </activity>
 
         <provider
-            android:name="com.mcgoldrick.bakingapp.data.RecipeProvider"
+            android:name=".data.RecipeProvider"
             android:authorities="com.mcgoldrick.bakingapp"
-            android:exported="false"/>
-    </application>
+            android:exported="false" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <activity
+            android:name=".ui.VideoPlayerActivity"
+            android:label="@string/title_activity_video_player"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
 
 </manifest>
