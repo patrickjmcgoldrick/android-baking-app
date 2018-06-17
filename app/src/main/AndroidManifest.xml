@@ -28,6 +28,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mcgoldrick.bakingapp.ui.RecipeListActivity" />
         </activity>
+
+        <provider
+            android:name="com.mcgoldrick.bakingapp.data.RecipeProvider"
+            android:authorities="com.mcgoldrick.bakingapp"
+            android:exported="false"/>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
