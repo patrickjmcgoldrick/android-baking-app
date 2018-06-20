@@ -14,8 +14,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onData;
+import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
 
 @RunWith(AndroidJUnit4.class)
@@ -35,6 +40,9 @@ public ActivityTestRule<MainActivity> mActivityTestRule =
 
     private IdlingResource mIdlingResource;
 
+    private static final int POSITION_CLICKED = 3;
+
+    private final static String DESERT_TITLE = "Cheesecake";
 
     /**
      * Setup idling resourse object
@@ -48,8 +56,16 @@ public ActivityTestRule<MainActivity> mActivityTestRule =
 
     @Test
     public void idlingResourceTest() {
+
+        // test for clicking 4th element on grid after giving app time to load data.
         onData(anything()).inAdapterView(withId(R.id.images_grid_view))
-                .atPosition(0).perform(click());
+                .atPosition(POSITION_CLICKED).perform(click());
+
+        // vertify that the particular object (toolbar) exists on Recipe Detail screen.
+        onView(withId(R.id.detail_toolbar)).check(matches(isDisplayed()));
+
+        // test that Recipe page has title matching DESERT_TITLE
+        onView(withText(DESERT_TITLE)).check(matches(withParent(withId(R.id.detail_toolbar))));
     }
 
     /**
