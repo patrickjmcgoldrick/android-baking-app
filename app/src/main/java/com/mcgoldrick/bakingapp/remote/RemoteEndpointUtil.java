@@ -34,16 +34,11 @@ public class RemoteEndpointUtil {
         String itemsJson = null;
         try {
 
-            Log.e(TAG, "base url: " + Config.BASE_URL);
-
             itemsJson = fetchPlainText(Config.BASE_URL);
         } catch (IOException e) {
             Log.e(TAG, "Error fetching items JSON", e);
             return null;
         }
-
-        Log.e(TAG, itemsJson.substring(0,100));
-
 
         // Parse JSON
         try {
