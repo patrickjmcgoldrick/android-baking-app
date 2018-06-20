@@ -14,11 +14,11 @@ import com.mcgoldrick.bakingapp.R;
 /**
  * The configuration screen for the {@link RecipeWidget RecipeWidget} AppWidget.
  */
-public class git RecipeWidgetConfigureActivity extends Activity {
+public class RecipeWidgetConfigureActivity extends Activity {
 
     private static final String PREFS_NAME = "com.mcgoldrick.bakingapp.widget.RecipeWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
-    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    int mAppWidgetIdgit  = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
