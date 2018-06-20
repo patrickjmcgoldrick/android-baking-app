@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.mcgoldrick.bakingapp.IdlingResource.SimpleIdlingResource;
 import com.mcgoldrick.bakingapp.R;
 import com.mcgoldrick.bakingapp.adapter.RecipeListAdapter;
 import com.mcgoldrick.bakingapp.data.Recipe;
@@ -29,6 +30,23 @@ public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Recipes> {
 
     final static String TAG = MainActivity.class.getSimpleName();
+
+    /** Used for automatic testing of resource loading */
+    @Nullable private SimpleIdlingResource mIdlingResource;
+
+    /**
+     * Only ever called from a test.  In production,
+     * we expect mIdlingResource to stay null.
+     *
+     * @return
+     */
+    @Nullable
+    public SimpleIdlingResource getIdlingResource() {
+        if(mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     public static final int TASK_LOADER_ID = 0;
 
@@ -58,6 +76,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // initialize idling resource
+        getIdlingResource();
+
+        // load data on background task
         getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
 
     }
@@ -65,9 +87,14 @@ public class MainActivity extends AppCompatActivity
     @NonNull
     @Override
     public Loader<Recipes> onCreateLoader(int id, @Nullable Bundle args) {
+
+        if(mIdlingResource != null) {
+            mIdlingResource.setIdleState(false);
+        }
+
         return new AsyncTaskLoader<Recipes>(this) {
 
-            // Initialize a Cursor, this will hold all the task data
+            // Initialize a Recipes object, this will hold all the task data
             Recipes mRecipes = null;
 
             // onStartLoading() is called when a loader first starts loading data
@@ -88,10 +115,15 @@ public class MainActivity extends AppCompatActivity
             public Recipes loadInBackground() {
                 // Will implement to load data
                 mRecipes = Recipes.getInstance();
+
+                if(mIdlingResource != null) {
+                    mIdlingResource.setIdleState(true);
+                }
+
                 return mRecipes;
             }
 
-            // deliverResult sends the result of the load, a Cursor, to the registered listener
+            // deliverResult sends the result of the load, a Recipes, to the registered listener
             public void deliverResult(Recipes data) {
                 mRecipes = data;
                 super.deliverResult(data);
