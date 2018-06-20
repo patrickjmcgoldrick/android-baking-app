@@ -128,4 +128,33 @@ public class Recipes {
         return ingredients;
     }
 
+    public String buildIngredientsString(JSONArray ingredients) {
+        StringBuffer buffer = new StringBuffer("Ingredients:\n\n");
+        for(int i=0; i < ingredients.length(); i++) {
+            JSONObject object = null;
+            try {
+                object = ingredients.getJSONObject(i);
+                if (i > 0) {
+                    buffer.append("\n");
+                }
+                buffer.append("\t" + object.getString("quantity")
+                        + " " + object.getString("measure")
+                        + " " + object.getString("ingredient"));
+            } catch (JSONException jsone) {
+                Log.e(TAG, "JSON error while building ingredients list.");
+                Log.e(TAG, "List built up to: " + buffer.toString());
+            }
+
+        }
+        return buffer.toString();
+
+    }
+
+    public WidgetData getWidgetData(int position) {
+        Recipe recipe = getRecipe(position);
+        JSONArray ingredientsJSON = getIngredients(position);
+        String ingredientsString = buildIngredientsString(ingredientsJSON);
+        return new WidgetData(recipe.getName(), ingredientsString);
+    }
+
 }

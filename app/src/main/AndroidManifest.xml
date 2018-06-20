@@ -64,7 +64,8 @@
                 android:resource="@xml/recipe_widget_info" />
         </receiver>
 
-        <activity android:name=".widget.RecipeWidgetConfigureActivity">
+        <activity android:name=".widget.RecipeWidgetConfigureActivity"
+            android:label="@string/title_activity_wigdet_configure">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.widget.RemoteViews;
 
 import com.mcgoldrick.bakingapp.R;
+import com.mcgoldrick.bakingapp.data.WidgetData;
 
 /**
  * Implementation of App Widget functionality.
@@ -16,10 +17,12 @@ public class RecipeWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = RecipeWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+        WidgetData widgetData = RecipeWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
+        views.setTextViewText(R.id.recipe_title, widgetData.getName());
+        views.setTextViewText(R.id.recipe_ingredients, widgetData.getIngredients());
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
