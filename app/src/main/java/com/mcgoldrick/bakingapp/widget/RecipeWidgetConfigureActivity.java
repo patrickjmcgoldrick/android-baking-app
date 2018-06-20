@@ -1,4 +1,4 @@
-package com.mcgoldrick.bakingapp;
+package com.mcgoldrick.bakingapp.widget;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.mcgoldrick.bakingapp.R;
+
 /**
  * The configuration screen for the {@link RecipeWidget RecipeWidget} AppWidget.
  */
-public class RecipeWidgetConfigureActivity extends Activity {
+public class git RecipeWidgetConfigureActivity extends Activity {
 
-    private static final String PREFS_NAME = "com.mcgoldrick.bakingapp.RecipeWidget";
+    private static final String PREFS_NAME = "com.mcgoldrick.bakingapp.widget.RecipeWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
