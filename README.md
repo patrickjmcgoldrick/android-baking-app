@@ -37,5 +37,5 @@ CRITERIA | MEETS SPECIFICATIONS
 
 CRITERIA | MEETS SPECIFICATIONS
 --- | ---
-- [ ] Application has a companion homescreen widget.  | Application has a companion homescreen widget.
-- [ ] Widget displays ingredient list for desired recipe. | Widget displays ingredient list for desired recipe.
+- [x] Application has a companion homescreen widget.  | Application has a companion homescreen widget.
+- [x] Widget displays ingredient list for desired recipe. | Widget displays ingredient list for desired recipe.
