@@ -18,7 +18,7 @@ public class Recipes {
 
     final static String TAG = Recipes.class.getSimpleName();
 
-    private List<Recipe> recipeList;
+    private List<Recipe> mRecipeList;
     private JSONArray mJSONdata;
 
     private static Recipes data;
@@ -43,40 +43,53 @@ public class Recipes {
 
     public List<Recipe> getRecipeList() {
         // make sure to only build this once.
-        if(recipeList != null) {
-            return recipeList;
+        if(mRecipeList != null) {
+            return mRecipeList;
         }
 
-        recipeList = new ArrayList<Recipe>();
-        try {
-            for (int i = 0; i < mJSONdata.length(); i++) {
-                JSONObject object = mJSONdata.getJSONObject(i);
-                Recipe recipe = new Recipe(i,
-                        object.getInt(RecipeContract.Recipes._ID),
-                        object.getString(RecipeContract.Recipes.NAME),
-                        object.getInt(RecipeContract.Recipes.SERVINGS),
-                        object.getString(RecipeContract.Recipes.IMAGE));
-                recipeList.add(recipe);
-            }
-        } catch (JSONException jsone) {
-            Log.e(TAG, "Failed to parse Recipes from top level of JSON file.");
+        mRecipeList = new ArrayList<Recipe>();
+        for (int i = 0; i < mJSONdata.length(); i++) {
+            Recipe recipe = this.getRecipe(i);
+            mRecipeList.add(recipe);
         }
-        return recipeList;
+        return mRecipeList;
     }
 
-    public JSONObject getRecipe(int position) {
+    /**
+     * Returns a Recipe object.
+     * TODO: to be more efficient, we cold check the RecipeList first,
+     * TODO: If that exists, we alreadly have an object of the type we want created.
+     * @param position
+     * @return
+     */
+    public Recipe getRecipe(int position) {
+        JSONObject object = getRecipeJSONObject(position);
+        Recipe recipe = null;
+        try {
+            recipe = new Recipe(position,
+                    object.getInt(RecipeContract.Recipes._ID),
+                    object.getString(RecipeContract.Recipes.NAME),
+                    object.getInt(RecipeContract.Recipes.SERVINGS),
+                    object.getString(RecipeContract.Recipes.IMAGE));
+        } catch (JSONException jsone) {
+            Log.e(TAG, "Failed to parse Recipe from top level of JSON file. Position given: " + position);
+        }
+        return recipe;
+    }
+
+    public JSONObject getRecipeJSONObject(int position) {
         JSONObject object = null;
         try {
             object =  mJSONdata.getJSONObject(position);
         } catch (JSONException jsone) {
-            Log.e(TAG, "Error reading content.", jsone);
+            Log.e(TAG, jsone.toString() + "Error reading JSON Recipe object at postion: " + position);
         }
         return object;
     }
 
-    private JSONArray getSteps(int recipeIndex) {
+    public JSONArray getSteps(int recipeIndex) {
         JSONArray steps = null;
-        JSONObject recipe = getRecipe(recipeIndex);
+        JSONObject recipe = getRecipeJSONObject(recipeIndex);
         try {
             steps =  recipe.getJSONArray(RecipeContract.Recipes.STEPS);
         } catch (JSONException jsone) {
@@ -103,4 +116,16 @@ public class Recipes {
         }
         return step;
     }
+
+    public JSONArray getIngredients(int recipeIndex) {
+        JSONArray ingredients = null;
+        JSONObject recipe = getRecipeJSONObject(recipeIndex);
+        try {
+            ingredients =  recipe.getJSONArray(RecipeContract.Recipes.INGREDIENTS);
+        } catch (JSONException jsone) {
+            Log.e(TAG, jsone.toString() + "Error reading ingredients from recipe at position: " + recipeIndex);
+        }
+        return ingredients;
+    }
+
 }
