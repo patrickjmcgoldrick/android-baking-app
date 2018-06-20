@@ -156,7 +156,7 @@ public class RecipesCursor implements Cursor {
     @Override
     public String getString(int columnIndex) {
         String value = null;
-        JSONObject object = mRecipeData.getRow(mPosition);
+        JSONObject object = mRecipeData.getRecipeJSONObject(mPosition);
         try {
             value = object.getString(getColumnName(columnIndex));
         } catch (JSONException jsone) {

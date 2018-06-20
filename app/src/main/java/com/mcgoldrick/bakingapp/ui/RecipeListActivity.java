@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.mcgoldrick.bakingapp.R;
 import com.mcgoldrick.bakingapp.data.RecipeContract;
 import com.mcgoldrick.bakingapp.data.RecipesCursor;
+import com.mcgoldrick.bakingapp.data.Utils;
+import com.squareup.picasso.Picasso;
 
 /**
  * An activity representing a list of Recipes. This activity
@@ -82,7 +84,7 @@ public class RecipeListActivity extends AppCompatActivity
     private void openDetailPage(View view, int position) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putInt(RecipeDetailFragment.ARG_ITEM_ID, position);
+            arguments.putInt(RecipeDetailFragment.ARG_RECIPE_INDEX, position);
             RecipeDetailFragment fragment = new RecipeDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -91,7 +93,7 @@ public class RecipeListActivity extends AppCompatActivity
         } else {
             Context context = view.getContext();
             Intent intent = new Intent(context, RecipeDetailActivity.class);
-            intent.putExtra(RecipeDetailFragment.ARG_ITEM_ID, position);
+            intent.putExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, position);
 
             context.startActivity(intent);
         }
@@ -159,18 +161,18 @@ public class RecipeListActivity extends AppCompatActivity
             mTwoPane = twoPane;
         }
 
-        @Override
-        public long getItemId(int position) {
-            mCursor.moveToPosition(position);
-            return mCursor.getLong(
-                    RecipeContract.Recipes.indexDict.get(RecipeContract.Recipes._ID)
-            );
-        }
+//        @Override
+//        public long getItemId(int position) {
+//            mCursor.moveToPosition(position);
+//            return mCursor.getLong(
+//                    RecipeContract.Recipes.indexDict.get(RecipeContract.Recipes._ID)
+//            );
+//        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recipe_list_content, parent, false);
+                    .inflate(R.layout.activity_grid_content, parent, false);
             final ViewHolder vh = new ViewHolder(view);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,11 +186,19 @@ public class RecipeListActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
-            holder.mNameView.setText(mCursor.getString(
-                    RecipeContract.Recipes.indexDict.get(RecipeContract.Recipes.NAME)
-            ));
-            //TODO: bind image if given a thumbnail
-            holder.itemView.setTag(position);
+            String name = mCursor.getString(
+                    RecipeContract.Recipes.indexDict.get(RecipeContract.Recipes.NAME));
+            holder.mNameView.setText(name);
+
+            String image = Utils.imageDict.get(name.toLowerCase());
+            if (image != null) {
+                Picasso.with(RecipeListActivity.this)
+                        .load(image)
+                        //.placeholder(R.drawable.user_placeholder)
+                        //.error(R.drawable.user_placeholder_error)
+                        .into(holder.mImageView);
+                holder.itemView.setTag(position);
+            }
         }
 
         @Override

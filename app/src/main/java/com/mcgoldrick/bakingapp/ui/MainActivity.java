@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(@NonNull Loader<Recipes> loader) {
-
+        // No-op
     }
 
 }

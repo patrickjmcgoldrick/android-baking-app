@@ -10,4 +10,4 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.RecipeListActivity"
-    tools:listitem="@layout/recipe_list_content" />
+    tools:listitem="@layout/activity_grid_content" />

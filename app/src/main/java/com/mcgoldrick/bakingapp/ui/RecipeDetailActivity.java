@@ -2,12 +2,11 @@ package com.mcgoldrick.bakingapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.mcgoldrick.bakingapp.R;
@@ -18,7 +17,22 @@ import com.mcgoldrick.bakingapp.R;
  * item details are presented side-by-side with a list of items
  * in a {@link RecipeListActivity}.
  */
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity
+        implements RecipeDetailFragment.OnStepClickListener {
+
+    private final static String TAG = RecipeDetailFragment.class.getSimpleName();
+
+    public final static String ARG_TWO_PANE = "two_pane";
+
+    /**
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
+     * device.
+     */
+    private boolean mTwoPane;
+
+    private String mRecipeName;
+    private int mRecipeIndex = 0;
+    private int mStepIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +40,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -55,15 +60,32 @@ public class RecipeDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-//            arguments.putString(RecipeDetailFragment.ARG_ITEM_ID,
-//                    getIntent().getStringExtra(RecipeDetailFragment.ARG_ITEM_ID));
-            arguments.putInt(RecipeDetailFragment.ARG_ITEM_ID,
-                    getIntent().getIntExtra(RecipeDetailFragment.ARG_ITEM_ID, 0));
-            RecipeDetailFragment fragment = new RecipeDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.recipe_detail_container, fragment)
+            mRecipeIndex = getIntent().getIntExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, 0);
+            Log.e(TAG, "recipe index: " + mRecipeIndex);
+
+            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
+            detailFragment.setRecipeIndex(mRecipeIndex);
+            detailFragment.setStepIndex(mStepIndex);
+            detailFragment.setTwoPane(mTwoPane);
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.recipe_detail_container, detailFragment)
                     .commit();
+
+            if(findViewById(R.id.media_container) != null) {
+                mTwoPane = true;
+
+                VideoPlayerActivityFragment videoFragment = new VideoPlayerActivityFragment();
+                videoFragment.setRecipeIndex(mRecipeIndex);
+                videoFragment.setStepIndex(mStepIndex);
+                fragmentManager.beginTransaction()
+                        .add(R.id.media_container, videoFragment)
+                        .commit();
+            } else {
+                mTwoPane = false;
+            }
         }
     }
 
@@ -81,5 +103,29 @@ public class RecipeDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStepSelected(int newStepIndex) {
+        if(newStepIndex == mStepIndex) { // nothing is changing
+            return;
+        }
+        mStepIndex = newStepIndex;
+        if (mTwoPane) {
+            // in TwoPane mode, replace fragment
+            VideoPlayerActivityFragment videoFragment = new VideoPlayerActivityFragment();
+            videoFragment.setRecipeIndex(mRecipeIndex);
+            videoFragment.setStepIndex(mStepIndex);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.media_container, videoFragment)
+                    .commit();
+        } else {
+            // single pane, phone, send intent for new Activity.
+            Intent intent = new Intent(this, VideoPlayerActivity.class);
+            intent.putExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, mRecipeIndex);
+            intent.putExtra(VideoPlayerActivityFragment.ARG_STEP_POSITION, mStepIndex);
+            startActivity(intent);
+        }
+
     }
 }
