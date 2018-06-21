@@ -59,20 +59,10 @@ public class RecipeDetailActivity extends AppCompatActivity
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
             mRecipeIndex = getIntent().getIntExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, 0);
             Log.e(TAG, "recipe index: " + mRecipeIndex);
 
-            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
-            detailFragment.setRecipeIndex(mRecipeIndex);
-            detailFragment.setStepIndex(mStepIndex);
-            detailFragment.setTwoPane(mTwoPane);
-
             FragmentManager fragmentManager = getSupportFragmentManager();
-
-            fragmentManager.beginTransaction()
-                    .add(R.id.recipe_detail_container, detailFragment)
-                    .commit();
 
             if(findViewById(R.id.media_container) != null) {
                 mTwoPane = true;
@@ -86,6 +76,16 @@ public class RecipeDetailActivity extends AppCompatActivity
             } else {
                 mTwoPane = false;
             }
+
+            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
+            detailFragment.setRecipeIndex(mRecipeIndex);
+            detailFragment.setStepIndex(mStepIndex);
+            detailFragment.setTwoPane(mTwoPane);
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.recipe_detail_container, detailFragment)
+                    .commit();
+
         }
     }
 

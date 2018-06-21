@@ -157,8 +157,8 @@ public class RecipeDetailFragment extends Fragment {
                     int newPosition = vh.getAdapterPosition();
                     if(newPosition != mStepIndex) {
                         mStepIndex = newPosition;  // update the chosen step
-                        //forceUIrefresh();  // invalidate ui, to update UI.
-                        mCallback.onStepSelected(vh.getAdapterPosition());  // inform Activity of changes
+                        mCallback.onStepSelected(mStepIndex);  // inform Activity of changes
+                        mAdapter.forceUIrefresh(); // invalidate ui, to update UI.
                     }
                 }
             });
