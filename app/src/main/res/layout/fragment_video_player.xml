@@ -10,37 +10,42 @@
 
     <com.google.android.exoplayer2.ui.PlayerView android:id="@+id/player_view"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="0dp"
+        android:layout_weight="4"
         android:layout_margin="8dp"/>
 
     <TextView
         android:id="@+id/instructions"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:text="Step Instructions"
         android:layout_margin="16dp"
         android:layout_gravity="center"/>
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <ImageButton
+        <Button
             android:id="@+id/previous_step"
-            android:layout_width="50dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:layout_margin="16dp"
-            android:contentDescription="Previous Step"
-            android:src="@android:drawable/ic_media_previous"/>
+            android:background="@color/colorAccent"
+            android:contentDescription="@string/content_desc_previous"
+            android:text="@string/button_previous"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/next_step"
-            android:layout_width="50dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:layout_margin="16dp"
-            android:contentDescription="Next Step"
-            android:src="@android:drawable/ic_media_next"/>
+            android:background="@color/colorAccent"
+            android:contentDescription="@string/content_desc_next"
+            android:text="@string/button_next"/>
 
     </FrameLayout>
 </LinearLayout>

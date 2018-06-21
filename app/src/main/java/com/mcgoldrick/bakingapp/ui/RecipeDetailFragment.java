@@ -63,11 +63,6 @@ public class RecipeDetailFragment extends Fragment {
     // Define a new interface OnStepClickListener that triggers a callback in the host activity
     OnStepClickListener mCallback;
 
-    // OnStepClickListener interface, calls a method in the host activity named onStepSelected
-    public interface OnStepClickListener {
-        void onStepSelected(int stepIndex);
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).

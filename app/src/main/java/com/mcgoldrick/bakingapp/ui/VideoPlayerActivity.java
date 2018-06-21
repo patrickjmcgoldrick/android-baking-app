@@ -9,7 +9,11 @@ import android.view.MenuItem;
 
 import com.mcgoldrick.bakingapp.R;
 
-public class VideoPlayerActivity extends AppCompatActivity {
+public class VideoPlayerActivity extends AppCompatActivity
+                    implements OnStepClickListener {
+
+    int mRecipeIndex;
+    int mStepIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,9 @@ public class VideoPlayerActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mRecipeIndex = getIntent().getIntExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, 0);
+        mStepIndex = getIntent().getIntExtra(VideoPlayerActivityFragment.ARG_STEP_POSITION, 0);
+
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -34,20 +41,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         // http://developer.android.com/guide/components/fragments.html
         //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
-//            arguments.putInt(RecipeDetailFragment.ARG_RECIPE_INDEX,
-//                    getIntent().getIntExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, 0));
-//            arguments.putInt(VideoPlayerActivityFragment.ARG_STEP_POSITION,
-//                    getIntent().getIntExtra(VideoPlayerActivityFragment.ARG_STEP_POSITION, 0));
-            VideoPlayerActivityFragment videoFragment = new VideoPlayerActivityFragment();
-            videoFragment.setRecipeIndex(getIntent().getIntExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, 0));
-            videoFragment.setStepIndex(getIntent().getIntExtra(VideoPlayerActivityFragment.ARG_STEP_POSITION, 0));
-            videoFragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.media_container, videoFragment)
-                    .commit();
+            replaceVideoFragment();
         }
     }
 
@@ -61,10 +55,28 @@ public class VideoPlayerActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, RecipeDetailActivity.class));
+            Intent intent = new Intent(this, RecipeDetailActivity.class);
+            intent.putExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, mRecipeIndex);
+
+            navigateUpTo(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onStepSelected(int stepIndex) {
+        mStepIndex = stepIndex;
+        replaceVideoFragment();
+    }
+
+    private void replaceVideoFragment() {
+        VideoPlayerActivityFragment videoFragment = new VideoPlayerActivityFragment();
+        videoFragment.setRecipeIndex(mRecipeIndex);
+        videoFragment.setStepIndex(mStepIndex);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.media_container, videoFragment)
+                .commit();
+    }
 }
+

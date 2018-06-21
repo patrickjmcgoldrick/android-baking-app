@@ -1,6 +1,7 @@
 package com.mcgoldrick.bakingapp.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -50,17 +52,20 @@ public class VideoPlayerActivityFragment extends Fragment {
 
     int mNumberOfSteps = 0;
 
+    // ExoPlayer variables
     private SimpleExoPlayer mExoPlayer;
     private PlayerView mPlayerView;
     private MediaSource videoSource;
     TrackSelector trackSelector;
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
+    // Navigation buttons
+    Button mButtonNext;
+    Button mButtonPrevious;
 
+    // Callback in the host activity
+    OnStepClickListener mCallback;
+
+    /** Default Contructor required for the host Activity to instanciate */
     public VideoPlayerActivityFragment() {
     }
 
@@ -71,6 +76,7 @@ public class VideoPlayerActivityFragment extends Fragment {
     public void setStepIndex(int stepindex) {
         mStepIndex = stepindex;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,25 +90,45 @@ public class VideoPlayerActivityFragment extends Fragment {
             mStepIndex = savedInstanceState.getInt(ARG_STEP_POSITION);
         }
 
-//        if(getArguments() != null) {
-//            if (getArguments().containsKey(RecipeDetailFragment.ARG_RECIPE_INDEX)
-//                    && getArguments().containsKey(ARG_STEP_POSITION)) {
-//
-//                mRecipeIndex = getArguments().getInt(RecipeDetailFragment.ARG_RECIPE_INDEX);
-//                mStepIndex = getArguments().getInt(ARG_STEP_POSITION);
-//            }
-//        }
-
         Recipe recipe = data.getRecipe(mRecipeIndex);
         getActivity().setTitle(recipe.getName());
 
         mRecipeStep = data.getStep(mRecipeIndex, mStepIndex);
         mNumberOfSteps = data.numberOfSteps(mRecipeIndex);
 
+        mButtonPrevious = (Button) rootView.findViewById(R.id.previous_step);
+        mButtonNext = (Button) rootView.findViewById(R.id.next_step);
 
+        if(mButtonPrevious != null) { // test that button exist in UI
+            // disable navigation buttons, if approriate
+            if(mStepIndex == 0) {
+                mButtonPrevious.setEnabled(false);
+            }
+            if (mStepIndex >= mNumberOfSteps -1) {
+                mButtonNext.setEnabled(false);
+            }
+            if(mButtonPrevious.isEnabled()) {
+                mButtonPrevious.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mCallback.onStepSelected(mStepIndex - 1);
+                    }
+                });
+            }
 
+            if(mButtonNext.isEnabled()) {
+                mButtonNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mCallback.onStepSelected(mStepIndex + 1);
+                    }
+                });
+            }
+        }
+
+        // setup Instruction TextView
         TextView instructionView = (TextView) rootView.findViewById(R.id.instructions);
-        if(instructionView != null) {
+        if(instructionView != null) { // test ui item exists
             String instructions = "";
             try {
                 instructions = mRecipeStep.getString(RecipeContract.Steps.INSTRUCTION);
@@ -149,16 +175,13 @@ public class VideoPlayerActivityFragment extends Fragment {
             // Bind the player to the view.
             mPlayerView.setPlayer(mExoPlayer);
 
-
-            // Prepare the MediaSource.
-
-// Produces DataSource instances through which media data is loaded.
+            // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
                     Util.getUserAgent(getContext(), getString(R.string.app_name)), bandwidthMeter);
-// This is the MediaSource representing the media to be played.
+            // This is the MediaSource representing the media to be played.
             videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(mediaUri);
-// Prepare the player with the source.
+            // Prepare the player with the source.
             mExoPlayer.prepare(videoSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -188,5 +211,17 @@ public class VideoPlayerActivityFragment extends Fragment {
         currentState.putInt(ARG_STEP_POSITION, mStepIndex);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            mCallback = (OnStepClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnImageClickListener");
+        }
+    }
 
 }

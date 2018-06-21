@@ -18,7 +18,7 @@ import com.mcgoldrick.bakingapp.R;
  * in a {@link RecipeListActivity}.
  */
 public class RecipeDetailActivity extends AppCompatActivity
-        implements RecipeDetailFragment.OnStepClickListener {
+        implements OnStepClickListener {
 
     private final static String TAG = RecipeDetailFragment.class.getSimpleName();
 

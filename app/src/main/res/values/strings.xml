@@ -7,13 +7,20 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_wigdet_configure">Baking Time Widget Configuration</string>
 
+    <!-- Button Text -->
+    <string name="button_previous">Previous</string>
+    <string name="button_next">Next</string>
+
+    <!-- content descriptions -->
+    <string name="content_desc_previous">Previous Step</string>
+    <string name="content_desc_next">Next Step</string>
+
     <!-- Full screen mode String resources -->
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <!-- widget related String resources -->
-    <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">Configure</string>
     <string name="widget_choose_recipe">Please choose a recipe:</string>
 </resources>
