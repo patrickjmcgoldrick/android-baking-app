@@ -109,10 +109,6 @@ public class RecipeDetailActivity extends AppCompatActivity
     public void onStepSelected(int newStepIndex) {
         mStepIndex = newStepIndex;
         if (mTwoPane) {
-            if(newStepIndex == mStepIndex) { // nothing is changing
-                return;
-            }
-
             // in TwoPane mode, replace fragment
             VideoPlayerActivityFragment videoFragment = new VideoPlayerActivityFragment();
             videoFragment.setRecipeIndex(mRecipeIndex);
