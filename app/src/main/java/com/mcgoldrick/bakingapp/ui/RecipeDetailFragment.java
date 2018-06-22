@@ -105,9 +105,7 @@ public class RecipeDetailFragment extends Fragment {
             mStepIndex = savedInstanceState.getInt(VideoPlayerActivityFragment.ARG_STEP_POSITION, 0);
             mTwoPane = savedInstanceState.getBoolean(RecipeDetailActivity.ARG_TWO_PANE);
         }
-
-        Log.e(TAG, "recipe index: " + mRecipeIndex);
-
+        
         Recipes data = Recipes.getInstance();
 
         mRecipe = data.getRecipe(mRecipeIndex);
@@ -155,9 +153,11 @@ public class RecipeDetailFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     int newPosition = vh.getAdapterPosition();
+                    mStepIndex = newPosition;  // update the chosen step
+                    mCallback.onStepSelected(mStepIndex);  // inform Activity of changes
+
+                    // Only force UI refresh, if step has changed.
                     if(newPosition != mStepIndex) {
-                        mStepIndex = newPosition;  // update the chosen step
-                        mCallback.onStepSelected(mStepIndex);  // inform Activity of changes
                         mAdapter.forceUIrefresh(); // invalidate ui, to update UI.
                     }
                 }
