@@ -160,16 +160,19 @@ public class VideoPlayerActivityFragment extends Fragment {
             Log.e(TAG, "Error getting thumbnailURL from JSON object.");
         }
 
+        // if video is provided, load and play the video
         if(videoURL != null && !"".equals(videoURL)) {
             // Initialize the player.
             initializePlayer(Uri.parse(videoURL), savedInstanceState);
-        } else {
+
+        } else { // if no video, show thumbnail image, if provided
             if (thumbnailURL != null && !"".equals(thumbnailURL)) {
                 Picasso.with(thumbnailView.getContext())
                         .load(thumbnailURL)
+                        .error(R.drawable.error_loading_thumbnail)
                         .into(thumbnailView);
 
-            } else {
+            } else {  // otherwise show default image
                 Picasso.with(thumbnailView.getContext())
                         .load(R.drawable.no_media_provided)
                         .into(thumbnailView);
