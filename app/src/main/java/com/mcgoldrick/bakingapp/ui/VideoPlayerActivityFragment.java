@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -41,13 +42,16 @@ public class VideoPlayerActivityFragment extends Fragment {
 
     private static final String TAG = VideoPlayerActivityFragment.class.getSimpleName();
 
+    /** Media Player needs it's state saved on rotation, these variables refer to those values */
+    private static final String MEDIA_PLAYER_STATE = "media_player_state";
+    private static final String MEDIA_PLAYER_POSITION = "media_player_position";
+
+    /** Current recipe step reference variable */
     public static final String ARG_STEP_POSITION = "step_position";
 
     private int mRecipeIndex = 0;
     private int mStepIndex = 0;
-    private String mRecipeName = "";
 
-    private JSONObject recipeRow;
     private JSONObject mRecipeStep;
 
     int mNumberOfSteps = 0;
@@ -149,7 +153,7 @@ public class VideoPlayerActivityFragment extends Fragment {
 
         if(videoURL != null && !"".equals(videoURL)) {
             // Initialize the player.
-            initializePlayer(Uri.parse(videoURL));
+            initializePlayer(Uri.parse(videoURL), savedInstanceState);
         }
         return rootView;
     }
@@ -158,7 +162,7 @@ public class VideoPlayerActivityFragment extends Fragment {
      * Initialize ExoPlayer.
      * @param mediaUri The URI of the sample to play.
      */
-    private void initializePlayer(Uri mediaUri) {
+    private void initializePlayer(Uri mediaUri, Bundle savedInstanceState) {
         if (mExoPlayer == null) {
 
             // Measures bandwidth during playback. Can be null if not required.
@@ -183,8 +187,26 @@ public class VideoPlayerActivityFragment extends Fragment {
                     .createMediaSource(mediaUri);
             // Prepare the player with the source.
             mExoPlayer.prepare(videoSource);
-            mExoPlayer.setPlayWhenReady(true);
+            if(savedInstanceState != null) {
+                loadSavedMediaPlayerState(savedInstanceState);
+            } else {
+                mExoPlayer.setPlayWhenReady(true);
+            }
+        } else {
+            if(savedInstanceState != null) {
+                loadSavedMediaPlayerState(savedInstanceState);
+            } else {
+                Log.e(TAG, "Media Player existed at onCreateLayout, but not state was saved to setup player.");
+            }
+
         }
+    }
+
+    private void loadSavedMediaPlayerState(Bundle savedInstanceState) {
+        long playerPosition = savedInstanceState.getLong(MEDIA_PLAYER_POSITION, 0);
+        boolean playerState = savedInstanceState.getBoolean(MEDIA_PLAYER_STATE, false);
+        mExoPlayer.seekTo(playerPosition);
+        mExoPlayer.setPlayWhenReady(playerState);
     }
 
     @Override
@@ -209,6 +231,17 @@ public class VideoPlayerActivityFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle currentState) {
         currentState.putInt(RecipeDetailFragment.ARG_RECIPE_INDEX, mRecipeIndex);
         currentState.putInt(ARG_STEP_POSITION, mStepIndex);
+
+        // media player state variables
+        if(mExoPlayer != null) {
+           long playerPosiition =  mExoPlayer.getCurrentPosition();
+           boolean mediaPlayerReady = mExoPlayer.getPlayWhenReady();
+           currentState.putLong(MEDIA_PLAYER_POSITION, playerPosiition);
+           currentState.putBoolean(MEDIA_PLAYER_STATE, mediaPlayerReady);
+        } else {
+            currentState.putLong(MEDIA_PLAYER_POSITION, 0);
+            currentState.putBoolean(MEDIA_PLAYER_STATE, false);
+        }
     }
 
     @Override
