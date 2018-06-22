@@ -1,16 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginTop="?attr/actionBarSize"
-    tools:context=".ui.VideoPlayerActivityFragment"
-    tools:showIn="@layout/activity_video_player">
+    android:layout_height="match_parent">
 
-    <com.google.android.exoplayer2.ui.PlayerView android:id="@+id/player_view"
+    <!-- ExoPlayer media player for audio/video, this app only deals with video -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- Put thumbnails over video player when no video media is given -->
+    <ImageView
+        android:id="@+id/media_player_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_margin="8dp"/>
-</LinearLayout>
+        android:scaleType="centerCrop" />
+
+</FrameLayout>

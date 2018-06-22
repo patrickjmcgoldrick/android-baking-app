@@ -1,6 +1,5 @@
 package com.mcgoldrick.bakingapp.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -11,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -31,6 +30,7 @@ import com.mcgoldrick.bakingapp.R;
 import com.mcgoldrick.bakingapp.data.Recipe;
 import com.mcgoldrick.bakingapp.data.RecipeContract;
 import com.mcgoldrick.bakingapp.data.Recipes;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,6 +144,8 @@ public class VideoPlayerActivityFragment extends Fragment {
         }
 
         mPlayerView = (PlayerView) rootView.findViewById(R.id.player_view);
+        ImageView thumbnailView = (ImageView) rootView.findViewById(R.id.media_player_overlay);
+
         String videoURL = "";
         try {
             videoURL = mRecipeStep.getString(RecipeContract.Steps.VIDEO_URL);
@@ -151,9 +153,27 @@ public class VideoPlayerActivityFragment extends Fragment {
             Log.e(TAG, "Error getting videoURL from JSON object.");
         }
 
+        String thumbnailURL = "";
+        try {
+            thumbnailURL = mRecipeStep.getString(RecipeContract.Steps.THUMBNAIL_URL);
+        } catch (JSONException jsone) {
+            Log.e(TAG, "Error getting thumbnailURL from JSON object.");
+        }
+
         if(videoURL != null && !"".equals(videoURL)) {
             // Initialize the player.
             initializePlayer(Uri.parse(videoURL), savedInstanceState);
+        } else {
+            if (thumbnailURL != null && !"".equals(thumbnailURL)) {
+                Picasso.with(thumbnailView.getContext())
+                        .load(thumbnailURL)
+                        .into(thumbnailView);
+
+            } else {
+                Picasso.with(thumbnailView.getContext())
+                        .load(R.drawable.no_media_provided)
+                        .into(thumbnailView);
+            }
         }
         return rootView;
     }
