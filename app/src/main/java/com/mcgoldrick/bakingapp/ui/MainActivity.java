@@ -65,14 +65,10 @@ public class MainActivity extends AppCompatActivity
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e(TAG, "Click on position: " + position);
-                Toast.makeText(MainActivity.this, "Click on position: " + position, Toast.LENGTH_LONG)
-                        .show();
                 Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
                 intent.putExtra(RecipeDetailFragment.ARG_RECIPE_INDEX, position);
 
                 startActivity(intent);
-
             }
         });
 
