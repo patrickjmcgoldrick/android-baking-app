@@ -60,36 +60,52 @@ public class VideoPlayerActivityFragment extends Fragment {
     private SimpleExoPlayer mExoPlayer;
     private PlayerView mPlayerView;
     private MediaSource videoSource;
-    TrackSelector trackSelector;
+    private TrackSelector trackSelector;
+
+    // Thumbnail View
+    private ImageView mThumbnailView;
 
     // Navigation buttons
-    Button mButtonNext;
-    Button mButtonPrevious;
+    private Button mButtonNext;
+    private Button mButtonPrevious;
 
     // Callback in the host activity
-    OnStepClickListener mCallback;
+    private OnStepClickListener mCallback;
+
+    // Bundle savedState
+    Bundle mSavedState;
 
     /** Default Contructor required for the host Activity to instanciate */
     public VideoPlayerActivityFragment() {
     }
 
+    /** Setter for chosen Recipe, based on index */
     public void setRecipeIndex(int recipeIndex) {
         mRecipeIndex = recipeIndex;
     }
 
+    /** Setter for chosen Recipe Step, based on index */
     public void setStepIndex(int stepindex) {
         mStepIndex = stepindex;
     }
 
 
+    /**
+     * Init layout elements and attach appropriate media
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         Recipes data = Recipes.getInstance();
-       // Load the saved state (the list of images and list index) if there is one
-        if(savedInstanceState != null) {
+        // Load the saved state (the list of images and list index) if there is one
+        if (savedInstanceState != null) {
             mRecipeIndex = savedInstanceState.getInt(RecipeDetailFragment.ARG_RECIPE_INDEX);
             mStepIndex = savedInstanceState.getInt(ARG_STEP_POSITION);
         }
@@ -103,15 +119,15 @@ public class VideoPlayerActivityFragment extends Fragment {
         mButtonPrevious = (Button) rootView.findViewById(R.id.previous_step);
         mButtonNext = (Button) rootView.findViewById(R.id.next_step);
 
-        if(mButtonPrevious != null) { // test that button exist in UI
+        if (mButtonPrevious != null) { // test that button exist in UI
             // disable navigation buttons, if approriate
-            if(mStepIndex == 0) {
+            if (mStepIndex == 0) {
                 mButtonPrevious.setEnabled(false);
             }
-            if (mStepIndex >= mNumberOfSteps -1) {
+            if (mStepIndex >= mNumberOfSteps - 1) {
                 mButtonNext.setEnabled(false);
             }
-            if(mButtonPrevious.isEnabled()) {
+            if (mButtonPrevious.isEnabled()) {
                 mButtonPrevious.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -120,7 +136,7 @@ public class VideoPlayerActivityFragment extends Fragment {
                 });
             }
 
-            if(mButtonNext.isEnabled()) {
+            if (mButtonNext.isEnabled()) {
                 mButtonNext.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -132,7 +148,7 @@ public class VideoPlayerActivityFragment extends Fragment {
 
         // setup Instruction TextView
         TextView instructionView = (TextView) rootView.findViewById(R.id.instructions);
-        if(instructionView != null) { // test ui item exists
+        if (instructionView != null) { // test ui item exists
             String instructions = "";
             try {
                 instructions = mRecipeStep.getString(RecipeContract.Steps.INSTRUCTION);
@@ -144,7 +160,18 @@ public class VideoPlayerActivityFragment extends Fragment {
         }
 
         mPlayerView = (PlayerView) rootView.findViewById(R.id.player_view);
-        ImageView thumbnailView = (ImageView) rootView.findViewById(R.id.media_player_overlay);
+        mThumbnailView = (ImageView) rootView.findViewById(R.id.media_player_overlay);
+
+        mSavedState = savedInstanceState;
+
+        return  rootView;
+    }
+
+    /**
+     * Separate method to allow media player initialization to happen
+     * onStart or onResume based on SDK version.
+     */
+    private void initializeMediaFrame() {
 
         String videoURL = "";
         try {
@@ -163,29 +190,28 @@ public class VideoPlayerActivityFragment extends Fragment {
         // if video is provided, load and play the video
         if(videoURL != null && !"".equals(videoURL)) {
             // Initialize the player.
-            initializePlayer(Uri.parse(videoURL), savedInstanceState);
+            initializePlayer(Uri.parse(videoURL));
 
         } else { // if no video, show thumbnail image, if provided
             if (thumbnailURL != null && !"".equals(thumbnailURL)) {
-                Picasso.with(thumbnailView.getContext())
+                Picasso.with(mThumbnailView.getContext())
                         .load(thumbnailURL)
                         .error(R.drawable.error_loading_thumbnail)
-                        .into(thumbnailView);
+                        .into(mThumbnailView);
 
             } else {  // otherwise show default image
-                Picasso.with(thumbnailView.getContext())
+                Picasso.with(mThumbnailView.getContext())
                         .load(R.drawable.no_media_provided)
-                        .into(thumbnailView);
+                        .into(mThumbnailView);
             }
         }
-        return rootView;
     }
 
     /**
      * Initialize ExoPlayer.
      * @param mediaUri The URI of the sample to play.
      */
-    private void initializePlayer(Uri mediaUri, Bundle savedInstanceState) {
+    private void initializePlayer(Uri mediaUri) {
         if (mExoPlayer == null) {
 
             // Measures bandwidth during playback. Can be null if not required.
@@ -210,14 +236,14 @@ public class VideoPlayerActivityFragment extends Fragment {
                     .createMediaSource(mediaUri);
             // Prepare the player with the source.
             mExoPlayer.prepare(videoSource);
-            if(savedInstanceState != null) {
-                loadSavedMediaPlayerState(savedInstanceState);
+            if(mSavedState != null) {
+                loadSavedMediaPlayerState(mSavedState);
             } else {
                 mExoPlayer.setPlayWhenReady(true);
             }
-        } else {
-            if(savedInstanceState != null) {
-                loadSavedMediaPlayerState(savedInstanceState);
+        } else {  // not clear this code is needed.
+            if(mSavedState != null) {
+                loadSavedMediaPlayerState(mSavedState);
             } else {
                 Log.e(TAG, "Media Player existed at onCreateLayout, but not state was saved to setup player.");
             }
@@ -225,6 +251,11 @@ public class VideoPlayerActivityFragment extends Fragment {
         }
     }
 
+    /**
+     * Attempt to load previous media player state (media position and pause/play status)
+     *
+     * @param savedInstanceState
+     */
     private void loadSavedMediaPlayerState(Bundle savedInstanceState) {
         long playerPosition = savedInstanceState.getLong(MEDIA_PLAYER_POSITION, 0);
         boolean playerState = savedInstanceState.getBoolean(MEDIA_PLAYER_STATE, false);
@@ -232,10 +263,48 @@ public class VideoPlayerActivityFragment extends Fragment {
         mExoPlayer.setPlayWhenReady(playerState);
     }
 
+    /**
+     * Initialize media player based on SDK version
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializeMediaFrame();
+        }
+    }
+
+    /**
+     * Initialize media player based on SDK version
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+            initializeMediaFrame();
+        }
+    }
+
+    /**
+     * Cleanup media player resources based on SDK version
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
+    }
+
+    /**
+     * Cleanup media player resources based on SDK version
+     */
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     /**
@@ -250,6 +319,12 @@ public class VideoPlayerActivityFragment extends Fragment {
         }
     }
 
+    /**
+     * Save the current values for Recipe chosen and Step in recipe process.  Also,
+     * save media player position and pause/play state.
+     *
+     * @param currentState
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle currentState) {
         currentState.putInt(RecipeDetailFragment.ARG_RECIPE_INDEX, mRecipeIndex);
@@ -267,6 +342,11 @@ public class VideoPlayerActivityFragment extends Fragment {
         }
     }
 
+    /**
+     * Wireup callback and verify that parent Activity implements require interface
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
