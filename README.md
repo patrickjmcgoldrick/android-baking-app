@@ -19,7 +19,7 @@ Given, [example JSON](https://d17h27t6h515a5.cloudfront.net/topher/2017/May/5912
 <tr align=center>
   <td> Recipe List </td><td> Detail </td><td> Recipe Steps </td>
 </tr>
-<tr> <td colspan=3> ![Phone Baking App screenshots][image1] </td> </tr> 
+<tr> <td colspan=3> <img src="./artifacts/phone_screenshots.png"/> </td> </tr> 
 </table>
 
 
