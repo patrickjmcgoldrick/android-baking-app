@@ -1,8 +1,32 @@
+[//]: # (Image References)
+
+[image1]: ./artifacts/phone_screenshots.png "Phone Screenshot"
+[image2]: ./artifacts/tablet_opening.png "Tablet Opening Screenshot"
+[image3]: ./artifacts/tablet_detail.png "Tablet Detail Screenshot"
+
+
 # android-baking-app
+
+Udacity - Android Developer Nanodegree, Project #3
 
 Given, [example JSON](https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json)
 
-Build an app from scratch that shows baking recipes.  Including ingrediants, steps, videos and images.
+* Build an app from scratch that shows baking recipes.  
+* Show ingrediants, steps, videos, and images.  
+* Adjust screen formats for both phones and tablets.
+
+<table>
+<tr align=center>
+  <td> Recipe List </td><td> Detail </td><td> Recipe Steps </td>
+</tr>
+<tr> <td colspan=3>![Phone Baking App screenshots][image1] </td> </tr> 
+</table>
+
+
+
+Recipe List | Recipe Steps
+--- | ---
+![Tablet Baking App - Opening][image2] | ![Tablet Baking App - Detail][image3]
 
 ## Rubric - Make A Baking App
 
